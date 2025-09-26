@@ -1,0 +1,17 @@
+Course Code,Course Name,Pre-Requisite,Semester
+CC 101,Introduction to Computing,NONE,1st Semester
+CC 102,Fundamentals of Programming,NONE,1st Semester
+HCI 101,Human-Computer Interaction,NONE,1st Semester
+GE 5,Contemporary World,NONE,1st Semester
+GE 6,"Science, Technology & Society",NONE,1st Semester
+GE 7,Mathematics in the Modern World,NONE,1st Semester
+NSTP 1,National Service Training Program 1,NONE,1st Semester
+PE 1,Movement Enhancement,NONE,1st Semester
+CC 103,Intermediate Programming,CC 102,2nd Semester
+DS 101,Discrete Structures 1,GE 7,2nd Semester
+GE 1,Understanding Self,NONE,2nd Semester
+GE 2,Readings in Philippine History,NONE,2nd Semester
+GE 3,Arts Appreciation,NONE,2nd Semester
+GEE 3,Philippine Popular Culture,NONE,2nd Semester
+NSTP 2,National Service Training Program 2,NSTP 1,2nd Semester
+PE 2,Fitness Exercises,PE 1,2nd Semester

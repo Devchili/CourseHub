@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}{{ department.name }} - Hierarchy View{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-900">{{ department.name }} - Department Hierarchy</h2>
+            <a href="{{ url_for('admin.departments') }}" 
+               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                Back to Departments
+            </a>
+        </div>
+        
+        <p class="text-gray-600 mb-6">Complete view of courses, faculty, and enrolled students in this department.</p>
+        
+        {% if hierarchy_data %}
+            <div class="space-y-6">
+                {% for item in hierarchy_data %}
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-semibold text-gray-900">
+                            {{ item.course.code }} - {{ item.course.name }}
+                        </h3>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
+                            Year {{ item.course.year_required }}
+                        </span>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <h4 class="font-medium text-gray-900 mb-2">Course Information</h4>
+                            <p class="text-sm text-gray-600">
+                                <strong>Prerequisite:</strong> 
+                                {% if item.course.prerequisite %}
+                                    {{ item.course.prerequisite.code }} - {{ item.course.prerequisite.name }}
+                                {% else %}
+                                    None
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-medium text-gray-900 mb-2">Faculty Assignment</h4>
+                            {% if item.faculty %}
+                                <p class="text-sm text-gray-600">
+                                    <strong>Assigned:</strong> {{ item.faculty.username }}
+                                </p>
+                            {% else %}
+                                <p class="text-sm text-gray-500">No faculty assigned</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-gray-900 mb-2">
+                            Enrolled Students ({{ item.enrollment_count }})
+                        </h4>
+                        {% if item.students %}
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Year Level</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Grade</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200">
+                                        {% for student in item.students %}
+                                        <tr>
+                                            <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                                {{ student.username }}
+                                            </td>
+                                            <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                                {{ student.year_level }}
+                                            </td>
+                                            <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                                {% set enrollment = item.course.enrollments.filter_by(student_id=student.id).first() %}
+                                                {% if enrollment and enrollment.grade %}
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                        {% if enrollment.is_passing() %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                                        {{ enrollment.grade }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-gray-500">Not Graded</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-900">
+                                                {% set enrollment = item.course.enrollments.filter_by(student_id=student.id).first() %}
+                                                {% if enrollment and enrollment.grade %}
+                                                    {% if enrollment.is_passing() %}
+                                                        <span class="text-green-600 font-medium">Passing</span>
+                                                    {% else %}
+                                                        <span class="text-red-600 font-medium">Failing</span>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="text-gray-500">In Progress</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-gray-500">No students enrolled in this course.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500">No courses found in this department.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

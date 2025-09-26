@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Grades - Course Management System{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-900">Grade Management</h2>
+            <a href="{{ url_for('admin.dashboard') }}" 
+               class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                Back to Dashboard
+            </a>
+        </div>
+        
+        {% if enrollments %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Grade</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for enrollment in enrollments %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">{{ enrollment.student.username }}</div>
+                                <div class="text-sm text-gray-500">Year {{ enrollment.student.year_level }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">{{ enrollment.course.code }}</div>
+                                    <div class="text-sm text-gray-500">{{ enrollment.course.name }}</div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {{ enrollment.course.department.name if enrollment.course.department else 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {% if enrollment.grade %}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                        {% if enrollment.is_passing() %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                        {{ enrollment.grade }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-gray-500">Not Graded</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                {% if enrollment.grade %}
+                                    {% if enrollment.is_passing() %}
+                                        <span class="text-green-600 font-medium">Passing</span>
+                                    {% else %}
+                                        <span class="text-red-600 font-medium">Failing</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-gray-500">In Progress</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <form method="POST" action="{{ url_for('admin.edit_grade', enrollment_id=enrollment.id) }}" class="inline">
+                                    <select name="grade" class="rounded border-gray-300 text-sm focus:ring-primary focus:border-primary mr-2">
+                                        <option value="">Select Grade</option>
+                                        <option value="1" {% if enrollment.grade == '1' %}selected{% endif %}>1 (Excellent)</option>
+                                        <option value="2" {% if enrollment.grade == '2' %}selected{% endif %}>2 (Very Good)</option>
+                                        <option value="3" {% if enrollment.grade == '3' %}selected{% endif %}>3 (Good)</option>
+                                        <option value="4" {% if enrollment.grade == '4' %}selected{% endif %}>4 (Satisfactory)</option>
+                                        <option value="5" {% if enrollment.grade == '5' %}selected{% endif %}>5 (Fail)</option>
+                                    </select>
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">
+                                        Update
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500">No enrollments found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
