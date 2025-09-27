@@ -75,8 +75,24 @@
                     <p><strong>Total Enrolled:</strong> {{ enrollments|length }}</p>
                     <p><strong>Graded:</strong> {{ enrollments|selectattr('grade')|list|length }}</p>
                     <p><strong>Pending Grades:</strong> {{ enrollments|rejectattr('grade')|list|length }}</p>
-                    <p><strong>Passing:</strong> {{ enrollments|selectattr('is_passing')|list|length }}</p>
-                    <p><strong>Failing:</strong> {{ enrollments|selectattr('grade')|rejectattr('is_passing')|list|length }}</p>
+                    <p><strong>Passing:</strong>
+                        {% set passing_count = 0 %}
+                        {% for enrollment in enrollments %}
+                            {% if enrollment.grade and enrollment.is_passing() %}
+                                {% set passing_count = passing_count + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ passing_count }}
+                    </p>
+                    <p><strong>Failing:</strong>
+                        {% set failing_count = 0 %}
+                        {% for enrollment in enrollments %}
+                            {% if enrollment.grade and not enrollment.is_passing() %}
+                                {% set failing_count = failing_count + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                        {{ failing_count }}
+                    </p>
                 </div>
             </div>
             
